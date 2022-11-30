@@ -19,6 +19,7 @@ async function run() {
         const categoriesCollection = client.db('a12-server').collection('categories');
         const productsCollection = client.db('a12-server').collection('products');
         const productBookingsCollection = client.db('a12-server').collection('productBookings');
+        const usersCollection = client.db('a12-server').collection('users');
 
         // categories api
         app.get('/categories', async (req, res) => {
@@ -42,10 +43,25 @@ async function run() {
             res.send(category);
         });
 
+        // booking api using email query
+        app.get('/productsBookings', async (req, res) => {
+            const email = req.query.email;
+            const query = { email: email }
+            const productsBookings = await productBookingsCollection.find(query).toArray();
+            res.send(productsBookings);
+        })
+
+        // booking post 
         app.post('/productsBookings', async (req, res) => {
             const productBooking = req.body
-            console.log(productBooking);
             const result = await productBookingsCollection.insertOne(productBooking);
+            res.send(result);
+        });
+
+        // users post api - db
+        app.post('/users', async (req, res) => {
+            const user = req.body;
+            const result = await usersCollection.insertOne(user);
             res.send(result);
         })
 
