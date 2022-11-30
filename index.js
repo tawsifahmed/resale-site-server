@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
+const jwt = require('jsonwebtoken')
 require('dotenv').config()
 const port = process.env.PORT || 4000;
 
@@ -57,6 +58,20 @@ async function run() {
             const result = await productBookingsCollection.insertOne(productBooking);
             res.send(result);
         });
+
+        app.get('/jwt', async (req, res) => {
+            const email = req.query.email;
+            const query = { email: email };
+            const user = await usersCollection.findOne(query);
+
+            if (user) {
+                const token = jwt.sign({ email }, process.env.ACCESS_TOKEN, { expiresIn: '10d' })
+                return res.send({ accessToken: token })
+            }
+            res.status(403).send({ accessToken: 'forbidden access' })
+
+
+        })
 
         // users post api - db
         app.post('/users', async (req, res) => {
