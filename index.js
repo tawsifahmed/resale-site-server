@@ -24,6 +24,7 @@ function verifyJWT(req, res, next) {
     }
 
     const token = authHeader.split(' ')[1];
+
     jwt.verify(token, process.env.ACCESS_TOKEN, function (error, decoded) {
         if (error) {
             return res.status(403).send({ message: 'forbidden access' });
@@ -102,12 +103,15 @@ async function run() {
             res.send(users);
         })
 
+
+
         // users post api - db
         app.post('/users', async (req, res) => {
             const user = req.body;
             const result = await usersCollection.insertOne(user);
             res.send(result);
         });
+
 
         app.get('/users/admin/:email', async (req, res) => {
             const email = req.params.email;
