@@ -18,6 +18,7 @@ async function run() {
     try {
         const categoriesCollection = client.db('a12-server').collection('categories');
         const productsCollection = client.db('a12-server').collection('products');
+        const productBookingsCollection = client.db('a12-server').collection('productBookings');
 
         // categories api
         app.get('/categories', async (req, res) => {
@@ -26,11 +27,26 @@ async function run() {
             res.send(categories);
         })
 
+        app.get('/category1/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const service = await categoriesCollection.findOne(query);
+            res.send(service);
+        });
+
+        // products api based on category types
         app.get('/category/:id', async (req, res) => {
             const id = req.params.id
             const query = { id: id };
             const category = await productsCollection.find(query).toArray();
             res.send(category);
+        });
+
+        app.post('/productsBookings', async (req, res) => {
+            const productBooking = req.body
+            console.log(productBooking);
+            const result = await productBookingsCollection.insertOne(productBooking);
+            res.send(result);
         })
 
 
